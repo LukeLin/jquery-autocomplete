@@ -118,9 +118,11 @@ S.c.ImSearch = (function(){
          * @param key
          */
         search: function(key){
-            if(!this.handlerQueue.length) return;
+            if(!this.handlerQueue.length || key === '') return;
             if(this.noMatch) {
-                if(this.lastNoMatchKey !== '' && key.indexOf(this.lastNoMatchKey) === 0)
+                if(this.lastNoMatchKey !== ''
+                    && key.length >= this.lastNoMatchKey.length
+                    && key.indexOf(this.lastNoMatchKey) === 0)
                     return this.showNoMatch();
                 else this.noMatch.hide();
             }
@@ -362,6 +364,6 @@ S.c.ImSearch = (function(){
             return arr;
         }
     };
-    
+
     return AutoComplete;
 })();
