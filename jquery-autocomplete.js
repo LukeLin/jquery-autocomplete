@@ -153,7 +153,7 @@ S.c.ImSearch = (function(){
         handleNoMatch: function(key){
             var count = 0;
             for(var i = 0; i < this.handlerQueue.length; ++i){
-                if(!this.handlerQueue[i].list.is(':visible')) ++count;
+                if(!this.handlerQueue[i].container.is(':visible')) ++count;
             }
 
             if(count === this.handlerQueue.length) {
