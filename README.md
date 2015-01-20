@@ -13,6 +13,7 @@ this.searcher = new S.c.ImSearch({
 			highlight: true,
 			delay: 600
 		});
+		
 		this.searcher
 			.addSearcher({
 				getData: getLocalData,
