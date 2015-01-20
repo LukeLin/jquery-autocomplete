@@ -5,14 +5,14 @@ example:
 
 
 this.searcher = new S.c.ImSearch({
-			input: me.$('#im-session-search-input'),
-			width: 288,
-			height: $('.im-session-list').height() + 'px',
-			fold: true,
-			noMatchTpl: '\<div class="ac-no-match-item" style="display: block;">\<br>\<br>通讯录和会话组都没找到结果，\<br>请换个关键词试试吧！\</div>',
-			highlight: true,
-			delay: 600
-		});
+	input: me.$('#im-session-search-input'),
+	width: 288,
+	height: $('.im-session-list').height() + 'px',
+	fold: true,
+	noMatchTpl: '\<div class="ac-no-match-item" style="display: block;">\<br>\<br>通讯录和会话组都没找到结果，\<br>请换个关键词试试吧！\</div>',
+	highlight: true,
+	delay: 600
+});
 		
 		this.searcher
 			.addSearcher({
