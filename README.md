@@ -3,6 +3,7 @@ jquery autocomplete plugin
 
 example:
 
+
 this.searcher = new S.c.ImSearch({
 			input: me.$('#im-session-search-input'),
 			width: 288,
@@ -12,7 +13,6 @@ this.searcher = new S.c.ImSearch({
 			highlight: true,
 			delay: 600
 		});
-
 		this.searcher
 			.addSearcher({
 				getData: getLocalData,
