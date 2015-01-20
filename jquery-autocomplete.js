@@ -263,10 +263,7 @@ S.c.ImSearch = (function(){
 
             if(typeof this.filterBy === 'string') {
                 if(this.filterBy === '*') {
-                    for(i = 0; i < resp.length; ++i){
-                        item = resp[i];
-                        arr.push(item);
-                    }
+                    return resp;
                 } else {
                     var segs = this.filterBy.replace(/\s+/g, '').split(',');
                     var r_keys = new RegExp('^(?:' + segs.join('|') + ')$');
