@@ -5,7 +5,7 @@ example:
 
 
 		this.searcher = new S.c.ImSearch({
-			input: me.$('#im-session-search-input'),
+			input: $('#im-session-search-input'),
 			width: 288,
 			height: $('.im-session-list').height() + 'px',
 			fold: true,
