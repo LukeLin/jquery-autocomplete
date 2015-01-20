@@ -57,6 +57,9 @@ S.c.ImSearch = (function(){
                     timer = null;
                 }, me.delay);
             })
+            .on('paste', function(e){
+                    $(e.currentTarget).trigger('keydown');
+                })
             .on('click', function(e){
                     e.preventDefault();
                 })
