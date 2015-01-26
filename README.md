@@ -4,7 +4,7 @@ jquery autocomplete plugin
 example:
 
 
-		var searcher = new S.c.ImSearch({
+		var searcher = new ImSearch({
 			input: $('#im-session-search-input'),
 			width: 288,
 			height: $('.im-session-list').height() + 'px',
