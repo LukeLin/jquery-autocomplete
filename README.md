@@ -4,7 +4,7 @@ jquery autocomplete plugin
 example:
 
 
-		this.searcher = new S.c.ImSearch({
+		var searcher = new S.c.ImSearch({
 			input: $('#im-session-search-input'),
 			width: 288,
 			height: $('.im-session-list').height() + 'px',
@@ -14,7 +14,7 @@ example:
 			delay: 600
 		});
 		
-		this.searcher
+		searcher
 			.addSearcher({
 				getData: getLocalData,
 				formatData: func,
@@ -34,7 +34,7 @@ example:
 				title: '会话组搜索'
 			})
 			.addSearcher({
-				getData: getData,
+				getData: requestData,
 				filterBy: '*',
 				formatData: func,
 				itemTpl: func,
@@ -42,7 +42,7 @@ example:
 				title: '同事搜索'
 			})
 			.addSearcher({
-				getData: getData,
+				getData: requestData,
 				filterBy: 'department',
 				formatData: func,
 				itemTpl: func,
@@ -50,4 +50,4 @@ example:
 				title: '部门搜索'
 			});
 
-			this.searcher.search('something');
+			searcher.search('something');
