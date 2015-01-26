@@ -2,7 +2,7 @@
  * IM的搜索
  * Created by Luke on 2015/1/7.
  */
-S.c.ImSearch = (function(){
+var ImSearch = (function(){
 
     function isLengthUnit(x){
         return /^[+=]?(?:\d*\.?)\d+(?:px|em|rem)$/.test(x);
@@ -23,7 +23,7 @@ S.c.ImSearch = (function(){
         // 是否生成显示层容器
         if(opts.wrapper) this.wrapper = opts.wrapper;
         else {
-            this.wrapper = $('<div class="im-searchbar-wrapper" style="display:none;"></div>');
+            this.wrapper = $('<div class="im-searchbar-wrapper' + (opts.className ? ' ' + opts.className : '') + '" style="display:none;"></div>');
             this.wrapper.appendTo(document.body);
         }
 
@@ -132,6 +132,7 @@ S.c.ImSearch = (function(){
 
             for(var def, i = 0; i < this.handlerQueue.length; ++i){
                 var handler = this.handlerQueue[i];
+                handler.loading();
 
                 if(def && def.pipe) {
                     def.pipe(deferSearch(handler, key));
@@ -210,7 +211,7 @@ S.c.ImSearch = (function(){
         // 模板
         this.itemTpl = opts.itemTpl;
         //容器构造
-        this.container = $('<dl style="display:none;" id="im-search-container' + GUID++ +'" class="im-search-container"><dt class="im-result-title"></dt><dd><ul class="im-result-list"></ul></dd></dl>');
+        this.container = $('<dl id="im-search-container' + GUID++ +'" class="im-search-container"><dt class="im-result-title"></dt><dd><ul class="im-result-list"></ul><div class="im-loading">加载中...</div></dd></dl>');
         this.title = opts.title;
         if(this.title) this.container.find('.im-result-title').text(this.title);
         this.list = this.container.find('.im-result-list');
@@ -231,11 +232,24 @@ S.c.ImSearch = (function(){
                 oldLis.eq(i).removeData('value');
             }
             this.list.empty();
-            this.container.removeClass('im-show').hide();
+        },
+
+        loading: function(){
+            this.clearList();
+
+            var loading = this.container.find('.im-loading');
+            loading.show();
+        },
+
+        hideLoading: function(){
+            var loading = this.container.find('.im-loading');
+            loading.hide();
         },
 
         fillList: function(list, key){
-            if(!list.length) {
+            this.hideLoading();
+
+            if(!list || !list.length) {
                 if(this.noMatchTpl && typeof this.noMatchTpl === 'function')
                     this.list.append(this.noMatchTpl());
                 else this.container.hide();
@@ -243,7 +257,7 @@ S.c.ImSearch = (function(){
                 return;
             }
 
-            this.container.addClass('im-show').show();
+            this.container.show();
             for(var i = 0; i < list.length; ++i){
                 var str = '<li class="im-result-item">';
                 var tpl = this.itemTpl && this.itemTpl(list[i], key) || '';
@@ -302,13 +316,9 @@ S.c.ImSearch = (function(){
          * @returns {*}
          */
         search: function(key){
-            if(key === '') {
-                this.clearList();
-                return;
-            }
+            if(key === '') return;
 
             if(this.cache[key] != null) {
-                this.clearList();
                 this.fillList(this.cache[key], key);
                 return this.cache[key];
             }
@@ -316,7 +326,7 @@ S.c.ImSearch = (function(){
             var me = this;
             var ret = this.cacheResp[key] || this.getData(key);
 
-            if(!ret) return;
+            if(!ret) return this.fillList();
 
             if(ret.pipe && typeof ret.pipe === 'function') {
                 return ret.pipe(function(resp){
@@ -358,7 +368,6 @@ S.c.ImSearch = (function(){
 
             this.cacheResp[key] = resp;
             this.cache[key] = arr;
-            this.clearList();
             this.fillList(arr, key);
 
             return arr;
