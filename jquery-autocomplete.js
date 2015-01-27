@@ -237,7 +237,7 @@ var ImSearch = (function(){
         loading: function(){
             this.clearList();
 
-            var loading = this.container.find('.im-loading');
+            var loading = this.container.show().find('.im-loading');
             loading.show();
         },
 
