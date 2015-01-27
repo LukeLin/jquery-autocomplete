@@ -33,7 +33,7 @@ var ImSearch = (function(){
         this.handlerQueue = [];
 
         // 通过es6的Map数据结构来解决异步共用问题，减少请求数
-        if(Map) this.getDataMap = new Map();
+        if(typeof Map !== 'undefined') this.getDataMap = new Map();
 
         this.init();
     }
