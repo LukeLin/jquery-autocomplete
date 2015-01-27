@@ -1,5 +1,5 @@
 /**
- * IM的搜索
+ * 搜索
  * Created by Luke on 2015/1/7.
  */
 var ImSearch = (function(){
