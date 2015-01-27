@@ -221,7 +221,7 @@ var ImSearch = (function(){
 
         // 缓存器
         this.cache = {};
-        this.cacheResp = null;
+        this.cacheResp = {};
 
         this.initEvent();
     }
