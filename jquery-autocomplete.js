@@ -42,6 +42,8 @@ var ImSearch = (function(){
         init: function(){
             var me = this;
             var timer = null;
+            // 用来解决浏览器前进后退第一次搜索时内容不正确的情况
+            var focusTimes = 0;
 
             this.$input.on('keydown', function(e){
                 if(timer) clearTimeout(timer);
@@ -61,11 +63,19 @@ var ImSearch = (function(){
                     $(e.currentTarget).trigger('keydown');
                 })
             .on('click', function(e){
-                    e.preventDefault();
+                    var key = me.$input.val();
+                    if(key !== '') {
+                        me.wrapper.show();
+
+                        // 是第一次搜索，需要做计算或加载操作
+                        if(focusTimes < 2) {
+                            me.wrapper.show();
+                            me.search(key);
+                        }
+                    }
                 })
             .on('focus', function(){
-                    var key = me.$input.val();
-                    if(key !== '') me.wrapper.show();
+                    ++focusTimes;
                 })
             .on('blur', function(){
                     if(!mouseDownOnSelect) me.wrapper.hide();
