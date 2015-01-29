@@ -2,7 +2,7 @@
  * 搜索
  * Created by Luke on 2015/1/7.
  */
-var ImSearch = (function(){
+var AutoComplete = (function(){
 
     function isLengthUnit(x){
         return /^[+=]?(?:\d*\.?)\d+(?:px|em|rem)$/.test(x);
@@ -68,10 +68,7 @@ var ImSearch = (function(){
                         me.wrapper.show();
 
                         // 是第一次搜索，需要做计算或加载操作
-                        if(focusTimes < 2) {
-                            me.wrapper.show();
-                            me.search(key);
-                        }
+                        if(focusTimes < 2)  me.search(key);
                     }
                 })
             .on('focus', function(){
