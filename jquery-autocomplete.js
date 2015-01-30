@@ -428,71 +428,71 @@ var AutoComplete = (function(){
         },
 
         insert: function(key, value) {
-        key += '';
-        var cur = this;
-
-        for (var i = 0; i < key.length; ++i) {
-            var c = key[i];
-            var p = cur;
-            cur = cur.first;
-            var node = new DoubleLinkedTree(c, BRANCH);
-
-            // 如果没有子结点则将新结点作为子结点
-            if (!cur) {
-                p.first = node;
-                node.parent = p;
-                cur = node;
-            } else {
-                // 在兄弟结点中找到对应结点
-                if(c < cur.symbol) {
-                    node.parent = cur.parent;
-                    node.next = cur;
-                    node.parent.first = node;
+            key += '';
+            var cur = this;
+    
+            for (var i = 0; i < key.length; ++i) {
+                var c = key[i];
+                var p = cur;
+                cur = cur.first;
+                var node = new DoubleLinkedTree(c, BRANCH);
+    
+                // 如果没有子结点则将新结点作为子结点
+                if (!cur) {
+                    p.first = node;
+                    node.parent = p;
                     cur = node;
-                } else if(c > cur.symbol) {
-                    var b;
-                    while (cur) {
-                        // 如果相等，退出该循环查找下一字符
-                        if (c === cur.symbol) break;
-                        // 如果小于当前字符，则插入到当前结点前面
-                        else if(c < cur.symbol) {
-                            node.parent = cur.parent;
-                            node.next = cur;
-                            b.next = node;
-                            cur = node;
-                            break;
-                        } else {
-                            b = cur;
-                            cur = cur.next;
-                        }
-                    }
-
-                    // 如果没有兄弟结点则插入到兄弟结点
-                    if(!cur) {
-                        b.next = node;
-                        node.parent = b.parent;
+                } else {
+                    // 在兄弟结点中找到对应结点
+                    if(c < cur.symbol) {
+                        node.parent = cur.parent;
+                        node.next = cur;
+                        node.parent.first = node;
                         cur = node;
+                    } else if(c > cur.symbol) {
+                        var b;
+                        while (cur) {
+                            // 如果相等，退出该循环查找下一字符
+                            if (c === cur.symbol) break;
+                            // 如果小于当前字符，则插入到当前结点前面
+                            else if(c < cur.symbol) {
+                                node.parent = cur.parent;
+                                node.next = cur;
+                                b.next = node;
+                                cur = node;
+                                break;
+                            } else {
+                                b = cur;
+                                cur = cur.next;
+                            }
+                        }
+    
+                        // 如果没有兄弟结点则插入到兄弟结点
+                        if(!cur) {
+                            b.next = node;
+                            node.parent = b.parent;
+                            cur = node;
+                        }
                     }
                 }
             }
-        }
-
-        // 生成叶子结点
-        var success = false;
-        if (cur.kind === BRANCH) {
-            var child = cur.first;
-
-            // 如果不存在关键字则说明插入成功，否则插入失败
-            if(!(child && child.symbol === terminal)) {
-                cur.first = new DoubleLinkedTree(terminal, LEAF, value != null ? value : key);
-                cur.first.parent = cur;
-                cur.first.next = child;
-                success = true;
+    
+            // 生成叶子结点
+            var success = false;
+            if (cur.kind === BRANCH) {
+                var child = cur.first;
+    
+                // 如果不存在关键字则说明插入成功，否则插入失败
+                if(!(child && child.symbol === terminal)) {
+                    cur.first = new DoubleLinkedTree(terminal, LEAF, value != null ? value : key);
+                    cur.first.parent = cur;
+                    cur.first.next = child;
+                    success = true;
+                }
             }
-        }
-
-        return success;
-    },
+    
+            return success;
+        },
 
         remove: function(key){
             var p = this.first;
