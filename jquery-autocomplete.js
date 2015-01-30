@@ -27,7 +27,8 @@ var AutoComplete = (function(){
             this.wrapper.appendTo(document.body);
         }
 
-        this.lastNoMatchKey = '';
+        // 使用字典树保存不匹配的关键字
+        this.lastNoMatchKey = new DoubleLinkedTree();
 
         // 搜索器队列
         this.handlerQueue = [];
@@ -130,9 +131,7 @@ var AutoComplete = (function(){
         search: function(key){
             if(!this.handlerQueue.length || key === '') return;
             if(this.noMatch) {
-                if(this.lastNoMatchKey !== ''
-                    && key.length >= this.lastNoMatchKey.length
-                    && key.indexOf(this.lastNoMatchKey) === 0)
+                if(this.lastNoMatchKey.synoSearch(key))
                     return this.showNoMatch();
                 else this.noMatch.hide();
             }
@@ -168,7 +167,7 @@ var AutoComplete = (function(){
             }
 
             if(count === this.handlerQueue.length) {
-                this.lastNoMatchKey = key;
+                this.lastNoMatchKey.insert(key, key);
                 this.showNoMatch();
             }
         },
@@ -378,6 +377,163 @@ var AutoComplete = (function(){
             this.fillList(arr, key);
 
             return arr;
+        }
+    };
+    
+    var LEAF = 'leaf';
+    var BRANCH = 'branch';
+    var terminal = new String('$');
+
+    // 字典树
+    function DoubleLinkedTree(symbol, kind, info){
+        this.symbol = symbol || 'root';
+        this.next = null;
+        this.kind = kind || BRANCH;
+        this.info = info || null;
+        this.first = null;
+    }
+    DoubleLinkedTree.prototype = {
+        constructor: DoubleLinkedTree,
+
+        synoSearch: function(key){
+            var p = this.first;
+
+
+            for(var i = 0; p && i < key.length; ++i){
+                if(p && p.kind === LEAF) break;
+                while(p && p.symbol < key[i]) p = p.next;
+
+                if(p && p.symbol === key[i])
+                    p = p.first;
+                else p = null;
+            }
+
+            return p && p.kind === LEAF ? p.info : null;
+        },
+
+        search: function(key){
+            var p = this.first;
+            var i = 0;
+
+            while(p && i < key.length){
+                while(p && p.symbol < key[i]) p = p.next;
+
+                if(p && p.symbol === key[i]) {
+                    p = p.first;
+                    ++i;
+                } else p = null;
+            }
+
+            return p && p.kind === LEAF ? p.info : null;
+        },
+
+        insert: function(key, value) {
+            key += '';
+            var cur = this;
+
+            for (var i = 0; i < key.length; ++i) {
+                var c = key[i];
+                var p = cur;
+                cur = cur.first;
+                var node = new DoubleLinkedTree(c, BRANCH);
+
+                // 如果没有子结点则将新结点作为子结点
+                if (!cur) {
+                    p.first = node;
+                    node.parent = p;
+                    cur = node;
+                } else {
+                    // 在兄弟结点中找到对应结点
+                    if(c < cur.symbol) {
+                        node.parent = cur.parent;
+                        node.next = cur;
+                        node.parent.first = node;
+                        cur = node;
+                    } else {
+                        var b;
+                        while (cur) {
+                            // 如果相等，退出该循环查找下一字符
+                            if (c === cur.symbol) break;
+                            // 如果小于当前字符，则插入到当前结点前面
+                            else if(c < cur.symbol) {
+                                node.parent = cur.parent;
+                                node.next = cur.next;
+                                cur.next = node;
+                            }
+
+                            b = cur;
+                            cur = cur.next;
+                        }
+
+                        // 如果没有兄弟结点则插入到兄弟结点
+                        if(!cur) {
+                            b.next = node;
+                            node.parent = b.parent;
+                            cur = node;
+                        }
+                    }
+                }
+            }
+
+            // 生成叶子结点
+            var success = false;
+            if (cur.kind === BRANCH) {
+                var child = cur.first;
+
+                // 如果不存在关键字则说明插入成功，否则插入失败
+                if(!(child && child.symbol === terminal)) {
+                    cur.first = new DoubleLinkedTree(terminal, LEAF, value != null ? value : key);
+                    cur.first.parent = cur;
+                    cur.first.next = child;
+                    success = true;
+                }
+            }
+
+            return success;
+        },
+
+        remove: function(key){
+            var p = this.first;
+            var i = 0;
+
+            while(p && i < key.length){
+                while(p && p.symbol < key[i]) p = p.next;
+
+                if(p && p.symbol === key[i]) {
+                    p = p.first;
+                    ++i;
+                } else return false;
+            }
+
+            var data = p.info;
+            while(!p.next && p.parent) p = p.parent;
+            var top = p;
+
+            if(top == this) {
+                this.first = null;
+                return data;
+            }
+
+            p = top.parent;
+            if(p) {
+                p = p.first;
+                while(p){
+                    var pre;
+                    if(p == top) {
+                        // 删除在first域上的子树结点
+                        if(!pre) top.parent.first = top.parent.first.next;
+                        // 删除在next域的兄弟结点
+                        else  pre.next = pre.next.next;
+
+                        return data;
+                    } else {
+                        pre = p;
+                        p = p.next;
+                    }
+                }
+            }
+
+            return false;
         }
     };
 
